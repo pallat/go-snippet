@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# To make sure you don't harm you colleague
+#
+go fmt ./...
+#
