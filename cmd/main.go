@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"ktb.co.th/api/prototype/api"
 	"ktb.co.th/api/prototype/pkg/handler"
@@ -9,7 +11,7 @@ import (
 
 func main() {
 	r := gin.Default()
-	l := logs.New()
-	r.GET("/ping", handler.Handler(api.Feature, l))
+	l := logs.New(os.Stdout)
+	r.GET("/ping", handler.Serve(api.Feature, l))
 	r.Run() // listen and serve on 0.0.0.0:8080
 }

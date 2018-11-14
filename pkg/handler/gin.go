@@ -5,15 +5,11 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type HandlerFunc func(*Context)
+// Func is our custom Handler function
+type Func func(*Context)
 
-type Context struct {
-	id string
-	*gin.Context
-	Logger
-}
-
-func Handler(h HandlerFunc, l Logger) gin.HandlerFunc {
+// Serve use to convert Func to gin.HandlerFunc
+func Serve(h Func, l Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := uuid.NewV4().String()
 
@@ -22,10 +18,12 @@ func Handler(h HandlerFunc, l Logger) gin.HandlerFunc {
 			Context: c,
 			Logger:  l,
 		}
+
 		h(ctx)
 	}
 }
 
+// Logger represents the logging.
 type Logger interface {
 	Info(args ...interface{})
 	Debug(args ...interface{})

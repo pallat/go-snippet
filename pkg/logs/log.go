@@ -1,5 +1,7 @@
 package logs
 
+import "io"
+
 type Level int
 
 const (
@@ -12,7 +14,7 @@ const (
 	TraceLevel
 )
 
-func New() Logger {
+func New(w io.Writer) Logger {
 	return Logger{}
 }
 
