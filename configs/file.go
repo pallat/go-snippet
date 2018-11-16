@@ -1,4 +1,4 @@
-package config
+package configs
 
 // Load to load configuration file
 func Load(filename string) struct{} {
