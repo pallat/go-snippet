@@ -2,4 +2,5 @@ package config
 
 import "os"
 
-var ServiceURL = os.Getenv("SERVICE_URL")
+// PORT is port to serve like 8080
+var PORT = os.Getenv("PORT")
