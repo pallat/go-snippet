@@ -11,7 +11,8 @@ import (
 
 func main() {
 	r := gin.Default()
+	// gin.DebugPrintRouteFunc = GinPrintLog
 	l := logs.New(os.Stdout)
-	r.GET("/ping", handler.Serve(api.Feature, l))
+	r.POST("/getfatcas", handler.Serve(api.Fatca, l))
 	r.Run() // listen and serve on 0.0.0.0:8080
 }

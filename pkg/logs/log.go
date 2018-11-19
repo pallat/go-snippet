@@ -1,6 +1,9 @@
 package logs
 
-import "io"
+import (
+	"fmt"
+	"io"
+)
 
 type Level int
 
@@ -15,11 +18,15 @@ const (
 )
 
 func New(w io.Writer) Logger {
-	return Logger{}
+	return Logger{w: w}
 }
 
-type Logger struct{}
+type Logger struct {
+	w io.Writer
+}
 
-func (Logger) Info(args ...interface{})  {}
-func (Logger) Debug(args ...interface{}) {}
+func (Logger) Info(args ...interface{}) {}
+func (l Logger) Debug(args ...interface{}) {
+	fmt.Fprintln(l.w, args...)
+}
 func (Logger) Error(args ...interface{}) {}
