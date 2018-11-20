@@ -1,6 +1,7 @@
 package api
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"net/http"
 
@@ -12,6 +13,7 @@ var url = "https://httpbin.org/get"
 var client = &http.Client{
 	Transport: &http.Transport{
 		DisableKeepAlives: true,
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
 	},
 }
 
