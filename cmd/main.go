@@ -7,6 +7,8 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/labstack/gommon/log"
+	"ktb.co.th/api/prototype/api"
 	"ktb.co.th/api/prototype/pkg/logs"
 )
 
@@ -39,14 +41,28 @@ func main() {
 
 	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
 		c.Logger().SetOutput(logout)
-		c.Logger().Info(c.Response().Header().Get(echo.HeaderXRequestID) + "," + string(reqBody))
-		c.Logger().Info(c.Response().Header().Get(echo.HeaderXRequestID) + "," + string(resBody))
+		c.Logger().Infof("json", map[string]string{
+			"state":   "input",
+			"id":      c.Response().Header().Get(echo.HeaderXRequestID),
+			"payload": string(reqBody),
+		})
+		c.Logger().Infof("json", map[string]string{
+			"state":    "output",
+			"id":       c.Response().Header().Get(echo.HeaderXRequestID),
+			"response": string(resBody),
+		})
 	}))
+
+	if l, ok := e.Logger.(*log.Logger); ok {
+		l.SetHeader(`{"time":"${time_rfc3339_nano}","level":"${level}","prefix":"${prefix}","file":"${short_file}","line":"${line}"}`)
+
+	}
 
 	e.Use(logs.MiddlewareWriter(logout))
 
 	// Routes
 	e.GET("/", hello)
+	e.GET("/bin", api.HTTPBin)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
