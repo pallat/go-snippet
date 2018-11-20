@@ -63,6 +63,8 @@ func main() {
 	// Routes
 	e.GET("/", hello)
 	e.GET("/bin", api.HTTPBin)
+	e.GET("/business/error", api.HTTPBinBusinessFail)
+	e.GET("/technical/error", api.HTTPBinTechnicalFail)
 	e.GET("/panic", func(c echo.Context) error {
 		x := []int{}
 		return c.JSON(http.StatusOK, map[string]int{"result": x[10]})
