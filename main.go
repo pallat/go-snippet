@@ -28,6 +28,7 @@ const (
 var (
 	buildstamp string
 	githash    string
+	port       = "1323"
 )
 
 // Handler
@@ -80,10 +81,10 @@ func main() {
 	e.Use(logs.MiddlewareWriter(logout))
 
 	// Routes
-	e.GET("/build", build)
-	e.GET("/bin", example.HTTPBin)
-	e.GET("/business/error", example.HTTPBinBusinessFail)
-	e.GET("/technical/error", example.HTTPBinTechnicalFail)
+	e.GET("/builds", build)
+	e.GET("/bins", example.HTTPBin)
+	e.GET("/bins/businesserror", example.HTTPBinBusinessFail)
+	e.GET("/bins/technicalerror", example.HTTPBinTechnicalFail)
 	e.GET("/panic", func(c echo.Context) error {
 		x := []int{}
 		return c.JSON(http.StatusOK, map[string]int{"result": x[10]})
@@ -91,7 +92,7 @@ func main() {
 
 	// Start server
 	go func() {
-		if err := e.Start(":1323"); err != nil {
+		if err := e.Start(":" + port); err != nil {
 			e.Logger.Info("shutting down the server")
 		}
 	}()
