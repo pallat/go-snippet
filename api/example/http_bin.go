@@ -1,38 +1,32 @@
 package example
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"net/http"
 
 	"github.com/labstack/echo"
+	"github.com/pallat/gosnippet/pkg/https"
+	"github.com/pallat/gosnippet/pkg/logs"
 )
 
 var url = "https://httpbin.org/get"
 
-var client = &http.Client{
-	Transport: &http.Transport{
-		DisableKeepAlives: true,
-		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
-	},
+type Handler struct {
+	C https.IClient
 }
 
-func HTTPBin(c echo.Context) error {
-	c.Logger().Infof("json", map[string]string{
-		"service": "HTTPBin",
-		"state":   "request",
-		"id":      c.Response().Header().Get(echo.HeaderXRequestID),
-	})
+func (h *Handler) HTTPBin(c echo.Context) error {
+	c.Logger().Infof(logs.Info(c, "HTTPBin is starting"))
 
-	res, err := client.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		c.Logger().Infof("json", map[string]string{
-			"service": "HTTPBin",
-			"state":   "request",
-			"status":  "E",
-			"message": err.Error(),
-			"id":      c.Response().Header().Get(echo.HeaderXRequestID),
-		})
+		c.Logger().Errorf(logs.Error(c, err))
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	res, err := h.C.Do(req)
+	if err != nil {
+		c.Logger().Errorf(logs.Error(c, err))
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
@@ -42,23 +36,12 @@ func HTTPBin(c echo.Context) error {
 
 	err = dec.Decode(&in)
 	if err != nil {
-		c.Logger().Infof("json", map[string]string{
-			"service": "HTTPBin",
-			"state":   "request",
-			"status":  "E",
-			"message": err.Error(),
-			"id":      c.Response().Header().Get(echo.HeaderXRequestID),
-		})
+		c.Logger().Errorf(logs.Error(c, err))
 		return c.JSON(http.StatusInternalServerError, err)
 	}
+	defer res.Body.Close()
 
-	c.Logger().Infof("json", map[string]string{
-		"service": "HTTPBin",
-		"state":   "response",
-		"status":  "S",
-		"id":      c.Response().Header().Get(echo.HeaderXRequestID),
-	})
-
+	defer c.Logger().Infof(logs.Success(c))
 	return c.JSON(http.StatusOK, information{})
 }
 
@@ -86,7 +69,7 @@ func HTTPBinBusinessFail(c echo.Context) error {
 		"id":      c.Response().Header().Get(echo.HeaderXRequestID),
 	})
 
-	res, err := client.Get(url)
+	res, err := https.Client.Get(url)
 	if err != nil {
 		c.Logger().Infof("json", map[string]string{
 			"service": "HTTPBin",
@@ -132,7 +115,7 @@ func HTTPBinTechnicalFail(c echo.Context) error {
 		"id":      c.Response().Header().Get(echo.HeaderXRequestID),
 	})
 
-	res, err := client.Get("https://httpbin.org/status/404")
+	res, err := https.Client.Get("https://httpbin.org/status/404")
 	if err != nil {
 		c.Logger().Infof("json", map[string]string{
 			"service": "HTTPBin",

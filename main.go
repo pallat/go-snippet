@@ -16,6 +16,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/pallat/gosnippet/api/example"
 	"github.com/pallat/gosnippet/pkg/logs"
+	"github.com/pallat/gosnippet/pkg/https"
 
 	"github.com/spf13/viper"
 )
@@ -99,7 +100,9 @@ func main() {
 
 	// Routes
 	e.GET("/builds", build).Name = "build-number"
-	e.GET("/bins", example.HTTPBin).Name = "example-api-ok"
+
+	h := &example.Handler{C: https.Client}
+	e.GET("/bins", h.HTTPBin).Name = "example-api-ok"
 	e.GET("/bins/businesserror", example.HTTPBinBusinessFail)
 	e.GET("/bins/technicalerror", example.HTTPBinTechnicalFail)
 	e.GET("/panic", func(c echo.Context) error {
