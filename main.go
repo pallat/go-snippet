@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/signal"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo"
@@ -14,6 +16,8 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/pallat/gosnippet/api/example"
 	"github.com/pallat/gosnippet/pkg/logs"
+
+	"github.com/spf13/viper"
 )
 
 const (
@@ -43,6 +47,18 @@ func main() {
 	runtime.GOMAXPROCS(maxprocs)
 
 	var logout io.Writer = os.Stdout
+
+	// Configuration
+	viper.SetDefault("Port", port)
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer("_", "."))
+
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {             // Handle errors reading the config file
+		println(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
 
 	// Echo instance
 	e := echo.New()
@@ -92,7 +108,7 @@ func main() {
 
 	// Start server
 	go func() {
-		if err := e.Start(":" + port); err != nil {
+		if err := e.Start(":" + viper.GetString("Port")); err != nil {
 			e.Logger.Info("shutting down the server")
 		}
 	}()
