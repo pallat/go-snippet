@@ -51,6 +51,7 @@ func main() {
 	// Configuration
 	viper.SetDefault("Port", port)
 	viper.SetConfigName("config")
+	viper.AddConfigPath("./configs")
 	viper.AddConfigPath(".")
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer("_", "."))
