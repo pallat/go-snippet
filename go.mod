@@ -1,4 +1,4 @@
-module ktb.co.th/api/prototype
+module github.com/pallat/gosnippet
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
