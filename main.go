@@ -81,8 +81,8 @@ func main() {
 	e.Use(logs.MiddlewareWriter(logout))
 
 	// Routes
-	e.GET("/builds", build)
-	e.GET("/bins", example.HTTPBin)
+	e.GET("/builds", build).Name = "build-number"
+	e.GET("/bins", example.HTTPBin).Name = "example-api-ok"
 	e.GET("/bins/businesserror", example.HTTPBinBusinessFail)
 	e.GET("/bins/technicalerror", example.HTTPBinTechnicalFail)
 	e.GET("/panic", func(c echo.Context) error {
