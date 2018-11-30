@@ -42,7 +42,7 @@ func (h *Handler) HTTPBin(c echo.Context) error {
 	defer res.Body.Close()
 
 	defer c.Logger().Infof(logs.Success(c))
-	return c.JSON(http.StatusOK, information{})
+	return c.JSON(http.StatusOK, in)
 }
 
 type information struct {
