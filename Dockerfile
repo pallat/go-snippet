@@ -7,7 +7,7 @@ ADD . /src
 
 RUN cd /src && go build -o goapp main.go
 
-FROM scratch
+FROM alpine:latest
 
 WORKDIR /app
 COPY --from=build-env /src/goapp /app/
