@@ -1,14 +1,16 @@
-FROM golang:1.11 AS build-env
+FROM golang:alpine AS build-env
 
+RUN apk update && apk add --no-cache git
 ENV GO111MODULE=on
-ENV GOOS=linux
-ENV GOARCH=386
+ENV CGO_ENABLED=0
 ADD . /src
 
 RUN cd /src && go build -o goapp main.go
 
-FROM alpine:3.8
+FROM scratch
+
 WORKDIR /app
 COPY --from=build-env /src/goapp /app/
-EXPOSE 80
-CMD /app/goapp
+
+EXPOSE 1323
+ENTRYPOINT [ "/app/goapp" ]
