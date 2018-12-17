@@ -33,7 +33,7 @@ const (
 var (
 	buildstamp string
 	githash    string
-	port       = "1323"
+	port       = "80"
 )
 
 // Handler
@@ -47,7 +47,7 @@ func build(c echo.Context) error {
 func main() {
 	runtime.GOMAXPROCS(maxprocs)
 
-	var logout io.Writer = os.Stdout
+	var output io.Writer = os.Stdout
 
 	// Configuration
 	viper.SetDefault("Port", port)
@@ -73,12 +73,12 @@ func main() {
 		middleware.LoggerConfig{
 			Skipper: middleware.DefaultSkipper,
 			Format:  logFormat,
-			Output:  logout,
+			Output:  output,
 		},
 	))
 
 	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
-		c.Logger().SetOutput(logout)
+		c.Logger().SetOutput(output)
 		c.Logger().Infof("json", map[string]string{
 			"state":   "input",
 			"id":      c.Response().Header().Get(echo.HeaderXRequestID),
@@ -96,7 +96,7 @@ func main() {
 
 	}
 
-	e.Use(logs.MiddlewareWriter(logout))
+	e.Use(logs.MiddlewareWriter(output))
 
 	// Routes
 	e.GET("/builds", build).Name = "build-number"
