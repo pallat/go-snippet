@@ -8,6 +8,7 @@ ENV GO111MODULE=on
 ENV CGO_ENABLED=0
 ADD . /src
 
+RUN cd /src && test -z $(gofmt -l . | grep -v vendor)
 RUN cd /src && go test ./...
 RUN cd /src && go build -o goapp main.go
 
@@ -18,3 +19,5 @@ COPY --from=build-env /src/goapp /app/
 
 EXPOSE 1323
 ENTRYPOINT [ "/app/goapp" ]
+
+
