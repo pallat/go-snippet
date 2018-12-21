@@ -14,6 +14,8 @@ RUN cd /src && go build -o goapp main.go
 
 FROM alpine:latest
 
+RUN apk --no-cache add tzdata
+ENV TZ=Asia/Bangkok
 WORKDIR /app
 COPY --from=build-env /src/goapp /app/
 
